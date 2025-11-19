@@ -1,16 +1,16 @@
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Suspense, lazy } from "react";
+import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import { store, persistor } from "./store";
-import Index from "./pages/Index";
-import BookingSuccess from "./pages/BookingSuccess";
-import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
+const Index = lazy(() => import("../src/pages/Index"));
+const BookingSuccess = lazy(() => import("../src/pages/BookingSuccess"));
+const NotFound = lazy(() => import("../src/pages/NotFound"));
 
 export const App = () => (
   <Provider store={store}>
@@ -18,14 +18,16 @@ export const App = () => (
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
           <Toaster />
-          <Sonner />
           <BrowserRouter>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/booking-success" element={<BookingSuccess />} />
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
+            <Suspense
+              fallback={<div className="p-6 text-center">Loading...</div>}
+            >
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/booking-success" element={<BookingSuccess />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </Suspense>
           </BrowserRouter>
         </TooltipProvider>
       </QueryClientProvider>
