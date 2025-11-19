@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import { useAppSelector, useAppDispatch } from "@/store/hooks";
@@ -14,8 +14,9 @@ import {
   resetBooking,
   setLoading,
   saveBooking,
+  type DaySelection,
 } from "@/store/slices/bookingSlice";
-import { exportToPDF, printBooking } from "../features/booking/utils/pdfExport";
+import { exportToPDF } from "../features/booking/utils/pdfExport";
 import { SaveBookingDialog } from "../features/booking/components/SaveBookingDialog";
 import { LoadBookingDialog } from "../features/booking/components/LoadBookingDialog";
 import { LoadingOverlay } from "../components/LoadingOverlay";
@@ -23,11 +24,11 @@ import { BookingHeader } from "../features/booking/components/BookingHeader";
 import { InitialConfigurationStep } from "../features/booking/components/InitialConfigurationStep";
 import { DailyConfigurationStep } from "../features/booking/components/DailyConfigurationStep";
 import { SummaryStep } from "../features/booking/components/SummaryStep";
-import type { DaySelection } from "@/store/slices/bookingSlice";
-
+import { BackgroundGradients } from "../components/ui/backgroundGradient";
 export default function Index() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+
   const {
     currentStep,
     citizenship,
@@ -41,76 +42,65 @@ export default function Index() {
 
   const [saveDialogOpen, setSaveDialogOpen] = useState(false);
   const [loadDialogOpen, setLoadDialogOpen] = useState(false);
+  const isStep1Valid = Boolean(
+    citizenship && destinationCountry && startDate && numberOfDays && boardType
+  );
 
-  const validateStep1 = () => {
-    return Boolean(
-      citizenship &&
-        destinationCountry &&
-        startDate &&
-        numberOfDays &&
-        boardType
-    );
-  };
+  const isStep2Valid = dailySelections.every((day) => day.hotelId);
 
-  const validateStep2 = () => {
-    return dailySelections.every((day) => day.hotelId);
-  };
+  const handleNextStep1 = useCallback(async () => {
+    if (!isStep1Valid) return;
 
-  const handleNextStep1 = async () => {
-    if (!validateStep1()) return;
     dispatch(setLoading(true));
+    await new Promise((resolve) => setTimeout(resolve, 400));
 
-    // Simulate loading for better UX
-    await new Promise((resolve) => setTimeout(resolve, 500));
+    const days = Number(numberOfDays);
+    const start = new Date(startDate);
 
-    const days = parseInt(numberOfDays);
-    const startDateObj = new Date(startDate);
-    const selections: DaySelection[] = [];
+    const selections: DaySelection[] = Array.from({ length: days }, (_, i) => {
+      const current = new Date(start);
+      current.setDate(current.getDate() + i);
 
-    for (let i = 0; i < days; i++) {
-      const currentDate = new Date(startDateObj);
-      currentDate.setDate(currentDate.getDate() + i);
-      selections.push({
+      return {
         day: i + 1,
-        date: currentDate.toISOString().split("T")[0],
+        date: current.toISOString().split("T")[0],
         hotelId: "",
         lunchId: "",
         dinnerId: "",
-      });
-    }
+      };
+    });
+
     dispatch(setDailySelections(selections));
     dispatch(setStep(2));
     dispatch(setLoading(false));
-  };
+  }, [isStep1Valid, numberOfDays, startDate, dispatch]);
 
-  const handleNextStep2 = () => {
-    if (!validateStep2()) return;
+  const handleNextStep2 = useCallback(() => {
+    if (!isStep2Valid) return;
     dispatch(setStep(3));
-  };
+  }, [isStep2Valid, dispatch]);
 
-  const handleUpdateDaySelection = (
-    dayIndex: number,
-    field: keyof DaySelection,
-    value: string
-  ) => {
-    dispatch(updateDaySelection({ dayIndex, field, value }));
-  };
-
-  const handlePrevStep = () => {
+  const handlePrevStep = useCallback(() => {
     dispatch(setStep(Math.max(1, currentStep - 1)));
-  };
+  }, [currentStep, dispatch]);
 
-  const handleResetBooking = () => {
-    dispatch(resetBooking());
-  };
+  const handleUpdateDaySelection = useCallback(
+    (dayIndex: number, field: keyof DaySelection, value: string) => {
+      dispatch(updateDaySelection({ dayIndex, field, value }));
+    },
+    [dispatch]
+  );
+
+  const handleResetBooking = () => dispatch(resetBooking());
 
   const handleSaveBooking = (name: string) => {
     dispatch(saveBooking({ name }));
   };
 
-  const handleExportPDF = async () => {
+  const handleExportPDF = useCallback(async () => {
     dispatch(setLoading(true));
     await new Promise((resolve) => setTimeout(resolve, 300));
+
     exportToPDF({
       citizenship,
       destinationCountry,
@@ -119,42 +109,25 @@ export default function Index() {
       boardType,
       dailySelections,
     });
+
     dispatch(setLoading(false));
-  };
+  }, [
+    citizenship,
+    destinationCountry,
+    startDate,
+    numberOfDays,
+    boardType,
+    dailySelections,
+    dispatch,
+  ]);
 
   return (
     <div className="min-h-screen w-full bg-luxe-dark font-inter relative overflow-hidden">
-      {/* Gradient backgrounds */}
-      <div className="fixed inset-0 opacity-60 pointer-events-none">
-        <div
-          className="absolute top-0 left-0 w-full h-full"
-          style={{
-            background:
-              "radial-gradient(ellipse 1055px 658px at 808px 759px, rgba(24, 180, 244, 0.5) 0%, rgba(46, 55, 114, 0) 63%)",
-          }}
-        />
-        <div
-          className="absolute bottom-0 right-0 w-full h-full"
-          style={{
-            background:
-              "radial-gradient(ellipse 842px 410px at 657px 910px, rgba(172, 127, 244, 0.6) 0%, rgba(21, 25, 52, 0) 100%)",
-          }}
-        />
-        <div
-          className="absolute top-1/4 right-1/4 w-full h-full"
-          style={{
-            background:
-              "radial-gradient(circle 734px at 920px 1044px, rgba(155, 93, 254, 0.6) 5%, rgba(172, 127, 244, 0) 80%)",
-          }}
-        />
-      </div>
-
-      {/* Loading Overlay */}
+      <BackgroundGradients />
       <AnimatePresence>
         {isLoading && <LoadingOverlay message="Processing..." />}
       </AnimatePresence>
 
-      {/* Content */}
       <div className="relative z-10 min-h-screen">
         <BookingHeader
           currentStep={currentStep}
@@ -187,7 +160,7 @@ export default function Index() {
                   }
                   onBoardTypeChange={(value) => dispatch(setBoardType(value))}
                   onContinue={handleNextStep1}
-                  isValid={validateStep1()}
+                  isValid={isStep1Valid}
                 />
               )}
 
@@ -199,7 +172,7 @@ export default function Index() {
                   onUpdateDaySelection={handleUpdateDaySelection}
                   onContinue={handleNextStep2}
                   onPrev={handlePrevStep}
-                  isValid={validateStep2()}
+                  isValid={isStep2Valid}
                 />
               )}
 
@@ -221,12 +194,12 @@ export default function Index() {
         </main>
       </div>
 
-      {/* Dialogs */}
       <SaveBookingDialog
         open={saveDialogOpen}
         onOpenChange={setSaveDialogOpen}
         onSave={handleSaveBooking}
       />
+
       <LoadBookingDialog
         open={loadDialogOpen}
         onOpenChange={setLoadDialogOpen}

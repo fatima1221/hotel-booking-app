@@ -124,4 +124,11 @@
     overflow-x: auto;
     white-space: pre;
   }
+  .table-header {
+    @apply px-6 py-4 text-left text-white font-medium text-sm;
+  }
+
+  .table-cell {
+    @apply px-6 py-4 text-white text-sm;
+  }
 }
