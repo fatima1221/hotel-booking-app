@@ -1,6 +1,6 @@
-import { useNavigate } from 'react-router-dom';
-import { CheckCircle } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { useNavigate } from "react-router-dom";
+import { CheckCircle } from "lucide-react";
+import { motion } from "framer-motion";
 
 export default function BookingSuccess() {
   const navigate = useNavigate();
@@ -12,19 +12,22 @@ export default function BookingSuccess() {
         <div
           className="absolute top-0 left-0 w-full h-full"
           style={{
-            background: 'radial-gradient(ellipse 1055px 658px at 808px 759px, rgba(24, 180, 244, 0.5) 0%, rgba(46, 55, 114, 0) 63%)',
+            background:
+              "radial-gradient(ellipse 1055px 658px at 808px 759px, rgba(24, 180, 244, 0.5) 0%, rgba(46, 55, 114, 0) 63%)",
           }}
         />
         <div
           className="absolute bottom-0 right-0 w-full h-full"
           style={{
-            background: 'radial-gradient(ellipse 842px 410px at 657px 910px, rgba(172, 127, 244, 0.6) 0%, rgba(21, 25, 52, 0) 100%)',
+            background:
+              "radial-gradient(ellipse 842px 410px at 657px 910px, rgba(172, 127, 244, 0.6) 0%, rgba(21, 25, 52, 0) 100%)",
           }}
         />
         <div
           className="absolute top-1/4 right-1/4 w-full h-full"
           style={{
-            background: 'radial-gradient(circle 734px at 920px 1044px, rgba(155, 93, 254, 0.6) 5%, rgba(172, 127, 244, 0) 80%)',
+            background:
+              "radial-gradient(circle 734px at 920px 1044px, rgba(155, 93, 254, 0.6) 5%, rgba(172, 127, 244, 0) 80%)",
           }}
         />
       </div>
@@ -41,11 +44,14 @@ export default function BookingSuccess() {
             className="flex justify-center"
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
-            transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
+            transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
           >
             <div className="relative">
               <div className="absolute inset-0 bg-luxe-purple/30 rounded-full blur-2xl animate-pulse" />
-              <CheckCircle className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 text-luxe-lime relative z-10" strokeWidth={1} />
+              <CheckCircle
+                className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 text-luxe-lime relative z-10"
+                strokeWidth={1}
+              />
             </div>
           </motion.div>
 
@@ -70,14 +76,17 @@ export default function BookingSuccess() {
             transition={{ delay: 0.4 }}
           >
             <div className="space-y-2">
-              <p className="text-xs sm:text-sm text-white/60 font-medium">BOOKING REFERENCE</p>
+              <p className="text-xs sm:text-sm text-white/60 font-medium">
+                BOOKING REFERENCE
+              </p>
               <p className="text-xl sm:text-2xl font-semibold text-luxe-lime font-mono">
                 LX-{Math.random().toString(36).substring(2, 11).toUpperCase()}
               </p>
             </div>
             <div className="border-t border-luxe-purple/20 pt-3 sm:pt-4">
               <p className="text-sm sm:text-base text-white/80 leading-relaxed">
-                Your reservation has been successfully confirmed. A confirmation email with all booking details has been sent to your inbox.
+                Your reservation has been successfully confirmed. A confirmation
+                email with all booking details has been sent to your inbox.
               </p>
             </div>
           </motion.div>
@@ -88,12 +97,14 @@ export default function BookingSuccess() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
           >
-            <p className="text-sm sm:text-base text-white/70">What happens next?</p>
+            <p className="text-sm sm:text-base text-white/70">
+              What happens next?
+            </p>
             <ul className="text-left space-y-2 sm:space-y-3 text-sm sm:text-base text-white/80">
               {[
-                'Check your email for the confirmation and booking details',
-                'Your hotel will send pre-arrival information 2 weeks before your trip',
-                'Download the LuxeStay app to manage your booking on the go',
+                "Check your email for the confirmation and booking details",
+                "Your hotel will send pre-arrival information 2 weeks before your trip",
+                "Download the LuxeStay app to manage your booking on the go",
               ].map((item, index) => (
                 <motion.li
                   key={index}
@@ -110,7 +121,7 @@ export default function BookingSuccess() {
           </motion.div>
 
           <motion.button
-            onClick={() => navigate('/')}
+            onClick={() => navigate("/")}
             className="w-full py-3 sm:py-4 px-4 sm:px-6 rounded-xl font-medium text-base sm:text-lg font-poppins bg-luxe-purple hover:bg-luxe-purple-dark text-white shadow-lg hover:shadow-xl transition-all duration-300 mt-6 sm:mt-8"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
