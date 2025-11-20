@@ -1,13 +1,13 @@
 import { motion } from "framer-motion";
 import { ChevronLeft } from "lucide-react";
-
+import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { SelectField } from "@/components/ui/select-field";
 import { InfoBox } from "@/components/ui/info-box";
-
 import type { DaySelection } from "@/store/slices/bookingSlice";
 import { HOTELS, MEALS } from "@/features/booking/constants/data";
 import { formatDate } from "@/features/booking/utils/calculations";
+import { Pagination } from "@/components/ui/pagination";
 
 const stepVariants = {
   hidden: { opacity: 0, y: 20 },
@@ -29,6 +29,8 @@ type DailyConfigurationStepProps = {
   isValid: boolean;
 };
 
+const ITEMS_PER_PAGE = 10;
+
 export function DailyConfigurationStep({
   boardType,
   destinationCountry,
@@ -43,6 +45,29 @@ export function DailyConfigurationStep({
   const lunchOptions = meals?.lunch || [];
   const dinnerOptions = meals?.dinner || [];
   const showMeals = boardType !== "NB";
+
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const totalPages = Math.ceil(dailySelections.length / ITEMS_PER_PAGE);
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const endIndex = startIndex + ITEMS_PER_PAGE;
+
+  const paginatedSelections = useMemo(
+    () => dailySelections.slice(startIndex, endIndex),
+    [dailySelections, startIndex, endIndex]
+  );
+
+  const handlePreviousPage = () => {
+    setCurrentPage((prev) => Math.max(1, prev - 1));
+  };
+
+  const handleNextPage = () => {
+    setCurrentPage((prev) => Math.min(totalPages, prev + 1));
+  };
+
+  const handlePageClick = (page: number) => {
+    setCurrentPage(page);
+  };
 
   return (
     <motion.div
@@ -87,74 +112,91 @@ export function DailyConfigurationStep({
             </thead>
 
             <tbody>
-              {dailySelections.map((day, index) => (
-                <motion.tr
-                  key={day.day}
-                  className="border-t border-luxe-purple/20 hover:bg-white/5 transition-colors"
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.05 }}
-                >
-                  <td className="table-cell">Day {day.day}</td>
-                  <td className="table-cell text-white/80">
-                    {formatDate(day.date)}
-                  </td>
+              {paginatedSelections.map((day, index) => {
+                const globalIndex = startIndex + index;
 
-                  <td className="table-cell">
-                    <SelectField
-                      value={day.hotelId}
-                      placeholder="Select hotel"
-                      onChange={(v) =>
-                        onUpdateDaySelection(index, "hotelId", v)
-                      }
-                      options={hotelOptions.map((h) => ({
-                        value: h.id,
-                        label: `${h.name} - $${h.price}`,
-                      }))}
-                    />
-                  </td>
+                return (
+                  <motion.tr
+                    key={day.day}
+                    className="border-t border-luxe-purple/20 hover:bg-white/5 transition-colors"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.05 }}
+                  >
+                    <td className="table-cell">Day {day.day}</td>
+                    <td className="table-cell text-white/80">
+                      {formatDate(day.date)}
+                    </td>
 
-                  {showMeals && (
-                    <>
-                      <td className="table-cell">
-                        <SelectField
-                          value={day.lunchId}
-                          placeholder="No lunch"
-                          onChange={(v) =>
-                            onUpdateDaySelection(index, "lunchId", v)
-                          }
-                          options={lunchOptions.map((m) => ({
-                            value: m.id,
-                            label: `${m.name} - $${m.price}`,
-                          }))}
-                        />
-                      </td>
+                    <td className="table-cell">
+                      <SelectField
+                        value={day.hotelId}
+                        placeholder="Select hotel"
+                        onChange={(v) =>
+                          onUpdateDaySelection(globalIndex, "hotelId", v)
+                        }
+                        options={hotelOptions.map((h) => ({
+                          value: h.id,
+                          label: `${h.name} - $${h.price}`,
+                        }))}
+                      />
+                    </td>
 
-                      <td className="table-cell">
-                        <SelectField
-                          value={day.dinnerId}
-                          placeholder="No dinner"
-                          onChange={(v) =>
-                            onUpdateDaySelection(index, "dinnerId", v)
-                          }
-                          options={dinnerOptions.map((m) => ({
-                            value: m.id,
-                            label: `${m.name} - $${m.price}`,
-                          }))}
-                        />
-                      </td>
-                    </>
-                  )}
-                </motion.tr>
-              ))}
+                    {showMeals && (
+                      <>
+                        <td className="table-cell">
+                          <SelectField
+                            value={day.lunchId}
+                            placeholder="No lunch"
+                            onChange={(v) =>
+                              onUpdateDaySelection(globalIndex, "lunchId", v)
+                            }
+                            options={lunchOptions.map((m) => ({
+                              value: m.id,
+                              label: `${m.name} - $${m.price}`,
+                            }))}
+                          />
+                        </td>
+
+                        <td className="table-cell">
+                          <SelectField
+                            value={day.dinnerId}
+                            placeholder="No dinner"
+                            onChange={(v) =>
+                              onUpdateDaySelection(globalIndex, "dinnerId", v)
+                            }
+                            options={dinnerOptions.map((m) => ({
+                              value: m.id,
+                              label: `${m.name} - $${m.price}`,
+                            }))}
+                          />
+                        </td>
+                      </>
+                    )}
+                  </motion.tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
       </div>
 
+      {/* PAGINATION */}
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        totalItems={dailySelections.length}
+        startIndex={startIndex}
+        endIndex={endIndex}
+        onPrevious={handlePreviousPage}
+        onNext={handleNextPage}
+        onPageClick={handlePageClick}
+      />
+
       {boardType === "HB" && (
         <InfoBox text="Half Board: You can select either lunch OR dinner for each day, not both." />
       )}
+
       <motion.button
         onClick={onContinue}
         disabled={!isValid}
