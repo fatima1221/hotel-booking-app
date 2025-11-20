@@ -8,7 +8,7 @@ import type { DaySelection } from "@/store/slices/bookingSlice";
 import { HOTELS, MEALS } from "@/features/booking/constants/data";
 import { formatDate } from "@/features/booking/utils/calculations";
 import { Pagination } from "@/components/ui/pagination";
-
+import StepHeader from "@/components/ui/step-header";
 const stepVariants = {
   hidden: { opacity: 0, y: 20 },
   visible: { opacity: 1, y: 0 },
@@ -79,19 +79,11 @@ export function DailyConfigurationStep({
       transition={{ duration: 0.3 }}
       className="space-y-6 sm:space-y-8"
     >
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <h2 className="text-2xl sm:text-3xl md:text-4xl font-medium font-poppins text-luxe-lime">
-          Step 2: Daily Configuration
-        </h2>
-        <Button
-          variant="ghost"
-          onClick={onPrev}
-          className="text-white hover:text-luxe-purple"
-        >
-          <ChevronLeft className="w-5 h-5 mr-2" />
-          Back
-        </Button>
-      </div>
+      <StepHeader
+        title="Step 2: Daily Configuration"
+        showBack
+        onBack={onPrev}
+      />
 
       {/* TABLE */}
       <div className="bg-black/40 backdrop-blur-sm rounded-2xl border border-luxe-purple/30 overflow-hidden">

@@ -1,6 +1,6 @@
 import type { InputHTMLAttributes } from "react";
 import { motion } from "framer-motion";
-
+import StepHeader from "@/components/ui/step-header";
 import { COUNTRIES, BOARD_TYPES } from "@/features/booking/constants/data";
 
 type InitialConfigurationStepProps = {
@@ -44,14 +44,10 @@ export function InitialConfigurationStep({
       transition={{ duration: 0.3 }}
       className="space-y-6 sm:space-y-8"
     >
-      <div className="text-center space-y-2">
-        <h2 className="text-2xl sm:text-3xl md:text-4xl font-medium font-poppins text-luxe-lime">
-          Step 1: Initial Configuration
-        </h2>
-        <p className="text-base sm:text-lg md:text-xl text-white/90 font-poppins font-light">
-          Configure your travel preferences
-        </p>
-      </div>
+      <StepHeader
+        title="Step 1: Initial Configuration"
+        subtitle="Configure your travel preferences"
+      />
 
       <div className="bg-black/40 backdrop-blur-sm rounded-2xl sm:rounded-4xl p-4 sm:p-6 md:p-8 border border-luxe-purple/30 max-w-4xl mx-auto">
         <div className="space-y-4 sm:space-y-6">

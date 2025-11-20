@@ -13,6 +13,7 @@ import {
   getMealPrice,
 } from "@/features/booking/utils/calculations";
 import type { DaySelection } from "@/store/slices/bookingSlice";
+import StepHeader from "@/components/ui/step-header";
 
 type SummaryStepProps = {
   citizenship: string;
@@ -51,19 +52,12 @@ export function SummaryStep({
       transition={{ duration: 0.3 }}
       className="space-y-6 sm:space-y-8"
     >
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <h2 className="text-2xl sm:text-3xl md:text-4xl font-medium font-poppins text-luxe-lime">
-          Step 3: Summary & Price Calculation
-        </h2>
-        <Button
-          variant="ghost"
-          onClick={onPrev}
-          className="text-white hover:text-luxe-purple transition-colors"
-        >
-          <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
-          Back
-        </Button>
-      </div>
+      <StepHeader
+        title="Step 3: Summary"
+        subtitle="Review your booking details"
+        showBack
+        onBack={onPrev}
+      />
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
         <div className="space-y-4 sm:space-y-6">
