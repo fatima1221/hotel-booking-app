@@ -2,7 +2,7 @@ import type { InputHTMLAttributes } from "react";
 import { motion } from "framer-motion";
 import StepHeader from "@/components/ui/step-header";
 import { COUNTRIES, BOARD_TYPES } from "@/features/booking/constants/data";
-
+import { SelectField } from "@/components/ui/select-field";
 type InitialConfigurationStepProps = {
   data: {
     citizenship: string;
@@ -155,42 +155,6 @@ export function InitialConfigurationStep({
         </motion.button>
       </div>
     </motion.div>
-  );
-}
-
-type SelectFieldProps = {
-  label: string;
-  value: string;
-  onChange: (value: string) => void;
-  options: { value: string; label: string }[];
-  placeholder: string;
-};
-
-function SelectField({
-  label,
-  value,
-  onChange,
-  options,
-  placeholder,
-}: SelectFieldProps) {
-  return (
-    <div className="space-y-2">
-      <label className="block text-base sm:text-lg font-medium text-white">
-        {label}
-      </label>
-      <select
-        value={value}
-        onChange={(event) => onChange(event.target.value)}
-        className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-white/10 border border-luxe-purple/50 rounded-lg text-white text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-luxe-purple"
-      >
-        <option value="">{placeholder}</option>
-        {options.map((option) => (
-          <option key={option.value} value={option.value}>
-            {option.label}
-          </option>
-        ))}
-      </select>
-    </div>
   );
 }
 
